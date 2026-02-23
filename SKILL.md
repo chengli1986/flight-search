@@ -195,14 +195,42 @@ Present results as a comparison table in the user's language:
 ```
 ✈️ {ORIGIN} → {DEST} | {DATE} | {CABIN}舱
 
-| 航空公司 | 出发 | 到达 | 时长 | 经停 | 价格(USD) |
-|---------|------|------|------|------|-----------|
-| 国泰航空 | 9:30 AM PVG | 11:00 AM YVR | 17h30m | 1 (HKG) | $2,164 |
-| ... | ... | ... | ... | ... | ... |
+【直飞】
+| 航空公司 | 出发 | 到达 | 总时长 | 价格(USD) |
+|---------|------|------|--------|-----------|
+| 加拿大航空 | 17:35 PVG | 11:50 YVR | 10h15m | $7,521 |
+
+【转机】
+| 航空公司 | 航段 | 出发 | 到达 | 飞行时长 | 转机城市/等待 | 总时长 | 价格(USD) |
+|---------|------|------|------|---------|-------------|--------|-----------|
+| 国泰航空 | 第1段 | 9:30 PVG | 12:20 HKG | 2h50m | — | — | — |
+|         | 转机 | — | — | — | 香港 HKG / 2h50m | — | — |
+|         | 第2段 | 15:10 HKG | 11:00 YVR | 11h50m | — | — | — |
+|         | **合计** | **9:30 PVG** | **11:00 YVR** | — | **1停 (HKG)** | **17h30m** | **$2,164** |
+| 大韩航空 | 第1段 | 14:00 PVG | 17:20 ICN | 2h20m | — | — | — |
+|         | 转机 | — | — | — | 首尔 ICN / 1h20m | — | — |
+|         | 第2段 | 18:40 ICN | 11:15 YVR | 9h35m | — | — | — |
+|         | **合计** | **14:00 PVG** | **11:15 YVR** | — | **1停 (ICN)** | **13h15m** | **$3,724** |
 
 数据来源: Google Flights | 查询时间: {timestamp}
 ⚠️ 价格为实时查询结果，可能随时变动，以实际预订为准。
 ```
+
+### Getting Leg Details for Connecting Flights
+
+The initial Google Flights snapshot (efficient mode) only shows summary info (total duration, layover city). To get individual leg details:
+
+1. **Click the flight details button** — each flight in the snapshot has a "Flight details" button (e.g., ref `e33`, `e35`). Click it to expand leg-by-leg breakdown.
+2. **Take a new snapshot** after expanding — the expanded view shows each leg's departure/arrival time, duration, and layover wait time.
+3. **Repeat for each connecting flight** the user is interested in.
+
+On Trip.com, leg details are available by clicking "Select" on a flight card, which shows the full itinerary breakdown.
+
+**IMPORTANT:** For 转机航班, always expand and list every leg. Users need to know:
+- Each leg's departure/arrival airport and time
+- Each leg's flight duration
+- Layover city, airport, and waiting time
+- Whether layover is overnight (过夜转机)
 
 If the user requested specific airlines but they don't appear in results, explicitly state "未找到 {airline} 的航班" and explain why (e.g., no direct/connecting flights on that date).
 
