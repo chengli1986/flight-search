@@ -67,15 +67,44 @@ https://www.google.com/travel/flights?q=one+way+first+class+flights+from+Guangzh
 
 **Currency:** Results default to USD. To change currency, click the "Currency" button at the bottom of the page after results load. Or append `&curr=CNY` to the URL (may not always work — use the button if needed).
 
-### Strategy 2: Trip.com (If Google Flights fails)
+### Strategy 2: Trip.com (TESTED & WORKING - good complement to Google Flights)
 
-Trip.com (携程国际版) sometimes works with headless browsers:
+Trip.com (携程国际版) works with headless browsers and shows different pricing than Google Flights. Use it for price comparison or as fallback.
 
+**URL Template:**
 ```
-https://www.trip.com/flights/{ORIGIN_CITY}-to-{DEST_CITY}/tickets-{ORIGIN}-{DEST}?dcity={ORIGIN}&acity={DEST}&ddate={DATE}&rdate=&flighttype=ow&class=c&lowpricecalendar=close
+https://www.trip.com/flights/{ORIGIN_CITY_LOWER}-to-{DEST_CITY_LOWER}/tickets-{ORIGIN_LOWER}-{DEST_LOWER}?dcity={ORIGIN_LOWER}&acity={DEST_LOWER}&ddate={DATE}&flighttype={TRIP_TYPE}&class={CABIN}&lowpricecalendar=close&adult=1
 ```
 
-Cabin class parameter: `class=y` (economy), `class=c` (business), `class=f` (first)
+**Parameters:**
+- `{ORIGIN_CITY_LOWER}`: lowercase city name (e.g., `shanghai`)
+- `{ORIGIN_LOWER}`: lowercase IATA code (e.g., `sha` for all Shanghai airports, or `pvg` for Pudong only)
+- `{DATE}`: YYYY-MM-DD format
+- `{TRIP_TYPE}`: `ow` = one-way, `rt` = round trip
+- `{CABIN}`: `y` = economy, `c` = business, `f` = first
+
+**Examples:**
+```
+# One-way, business class, Shanghai to Vancouver
+https://www.trip.com/flights/shanghai-to-vancouver/tickets-sha-yvr?dcity=sha&acity=yvr&ddate=2026-02-25&flighttype=ow&class=c&lowpricecalendar=close&adult=1
+
+# Round trip, economy, Beijing to Tokyo
+https://www.trip.com/flights/beijing-to-tokyo/tickets-bjs-tyo?dcity=bjs&acity=tyo&ddate=2026-03-15&rdate=2026-03-22&flighttype=rt&class=y&lowpricecalendar=close&adult=1
+```
+
+**After navigating:**
+1. Wait 8 seconds: `browser act` with `kind: "wait"`, `timeMs: 8000`
+2. **Best method — JavaScript extraction** (most reliable on Trip.com):
+   ```javascript
+   browser evaluate --fn "JSON.stringify(Array.from(document.querySelectorAll('[data-testid^=\"u-flight-card\"]')).slice(0,15).map(c => c.innerText))"
+   ```
+   Each card returns text like: `"Air Canada | 17:35 | PVG T2 | 10h 15m | Nonstop | 11:50 | YVR M | US$7,606"`
+3. **Alternative — efficient snapshot**: `browser snapshot` with `mode: "efficient"` — shows interactive elements but less flight detail text
+4. **Alternative — screenshot**: `browser screenshot --full-page` — visual confirmation of results
+
+**Note:** Trip.com may show a notification popup ("Allow notifications"). Dismiss it by clicking the X or just ignore it — it doesn't block the results.
+
+**Note on Ctrip (ctrip.com):** The Chinese domestic version requires login and may not show results. Always use Trip.com (trip.com) instead.
 
 ### Strategy 3: Individual Airline Websites
 
