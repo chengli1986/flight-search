@@ -193,28 +193,62 @@ Do NOT waste time on these sites. Go directly to Google Flights.
 Present results as a comparison table in the user's language:
 
 ```
-✈️ {ORIGIN} → {DEST} | {DATE} | {CABIN}舱
+✈️ 上海 → 温哥华 | 2026-02-25 | 商务舱
 
-【直飞】
-| 航空公司 | 出发 | 到达 | 总时长 | 价格(USD) |
-|---------|------|------|--------|-----------|
-| 加拿大航空 | 17:35 PVG | 11:50 YVR | 10h15m | $7,521 |
+—— 直飞 ——
 
-【转机】
-| 航空公司 | 航段 | 出发 | 到达 | 飞行时长 | 转机城市/等待 | 总时长 | 价格(USD) |
-|---------|------|------|------|---------|-------------|--------|-----------|
-| 国泰航空 | 第1段 | 9:30 PVG | 12:20 HKG | 2h50m | — | — | — |
-|         | 转机 | — | — | — | 香港 HKG / 2h50m | — | — |
-|         | 第2段 | 15:10 HKG | 11:00 YVR | 11h50m | — | — | — |
-|         | **合计** | **9:30 PVG** | **11:00 YVR** | — | **1停 (HKG)** | **17h30m** | **$2,164** |
-| 大韩航空 | 第1段 | 14:00 PVG | 17:20 ICN | 2h20m | — | — | — |
-|         | 转机 | — | — | — | 首尔 ICN / 1h20m | — | — |
-|         | 第2段 | 18:40 ICN | 11:15 YVR | 9h35m | — | — | — |
-|         | **合计** | **14:00 PVG** | **11:15 YVR** | — | **1停 (ICN)** | **13h15m** | **$3,724** |
+1️⃣ 加拿大航空 Air Canada | $7,521 / ¥54,602 / C$10,530
+   PVG 17:35 ✈ YVR 11:50 | 10h15m 直飞
 
-数据来源: Google Flights | 查询时间: {timestamp}
+—— 转机 ——
+
+2️⃣ 国泰航空 Cathay Pacific | $2,164 / ¥15,711 / C$3,030
+   总时长 17h30m
+   第1段: PVG 9:30 ✈ HKG 12:20 (2h50m)
+   ⏳ 香港HKG转机 等待2h50m
+   第2段: HKG 15:10 ✈ YVR 11:00 (11h50m)
+
+3️⃣ 大韩航空 Korean Air | $3,724 / ¥27,039 / C$5,214
+   总时长 13h15m
+   第1段: PVG 14:00 ✈ ICN 17:20 (2h20m)
+   ⏳ 首尔ICN转机 等待1h20m
+   第2段: ICN 18:40 ✈ YVR 11:15 (9h35m)
+
+4️⃣ 厦门航空 XiamenAir | $1,734 / ¥12,589 / C$2,428
+   总时长 35h40m
+   第1段: SHA 22:00 ✈ XMN 00:15+1 (2h15m)
+   ⏳ 厦门XMN转机 等待22h45m ⚠️过夜
+   第2段: XMN 23:00 ✈ YVR 17:40 (12h40m)
+
+数据来源: Google Flights | 查询时间: 2026-02-25 18:30 UTC
+汇率: 1 USD = ¥7.26 CNY = C$1.40 CAD (实时)
 ⚠️ 价格为实时查询结果，可能随时变动，以实际预订为准。
 ```
+
+**Format rules:**
+- Each flight is numbered and shows airline (中英文) and price in three currencies on the header line
+- Price format: `$USD / ¥RMB / C$CAD` (e.g., `$2,164 / ¥15,711 / C$3,030`)
+- For connecting flights, total duration goes on a separate line below the header
+- Each leg on its own line: `{AIRPORT} {TIME} ✈ {AIRPORT} {TIME} ({LEG_DURATION})`
+- Layover line between legs: `⏳ {CITY}{AIRPORT}转机 等待{WAIT_TIME}`
+- Flag overnight layovers with `⚠️过夜`
+- `+1` suffix on arrival time if it lands the next day
+
+### Currency Conversion
+
+Google Flights returns prices in USD by default. Convert to RMB and CAD:
+
+1. **Get live exchange rates** before formatting output — use web search:
+   ```
+   web_search: "USD to CNY exchange rate today"
+   web_search: "USD to CAD exchange rate today"
+   ```
+2. **Apply rates** to all USD prices and round to nearest integer
+3. **Show all three currencies** on every price line: `$USD / ¥RMB / C$CAD`
+4. **Add rate footnote** at the bottom:
+   ```
+   汇率: 1 USD = ¥X.XX CNY = C$X.XX CAD (实时)
+   ```
 
 ### Getting Leg Details for Connecting Flights
 
